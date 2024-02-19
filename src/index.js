@@ -3,11 +3,24 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import 'react-day-picker/dist/style.css';
+import AuthProvider from './contexts/AuthProvider';
+
+//about tanstack or react query
+import { QueryClient,QueryClientProvider,} from 'react-query';
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    {/* tanstack or react query */}
+    <QueryClientProvider client={queryClient}> 
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </QueryClientProvider>
+
+
   </React.StrictMode>
 );
 
