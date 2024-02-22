@@ -17,7 +17,7 @@ const ManageDoctors = () => {
         queryKey: ['doctors'],
         queryFn: async () => {
             try {
-                const res = await fetch('http://localhost:5000/doctors', {
+                const res = await fetch('https://doctors-portal-server-mauve-two.vercel.app/doctors', {
                     headers: {
                         authorization: `bearer ${localStorage.getItem('accessToken')}`
                     }
@@ -35,7 +35,7 @@ const ManageDoctors = () => {
     })
 
     const handleDeleteDoctor = doctor =>{
-        fetch(`http://localhost:5000/doctors/${doctor._id}`,{
+        fetch(`https://doctors-portal-server-mauve-two.vercel.app/doctors/${doctor._id}`,{
             method: 'DELETE',
             headers:{
                 authorization: `bearer ${localStorage.getItem('accessToken')}`,
@@ -73,8 +73,8 @@ const ManageDoctors = () => {
                     </thead>
                     <tbody>
                         {
-                            doctors.map((doctor, i) => <tr
-                                key={doctor._id}
+                            doctors?.map((doctor, i) => <tr
+                                key={doctor?._id}
                             >
                                 <th>{i + 1}</th>
                                 <td><div className="avatar">
@@ -82,9 +82,9 @@ const ManageDoctors = () => {
                                         <img src={doctor.image} alt='' />
                                     </div>
                                 </div></td>
-                                <td>{doctor.name}</td>
-                                <td>{doctor.email}</td>
-                                <td>{doctor.specialty}</td>
+                                <td>{doctor?.name}</td>
+                                <td>{doctor?.email}</td>
+                                <td>{doctor?.specialty}</td>
                                 <td>
                                     <button className="btn btn-sm btn-error" onClick={ async() =>{
                                         await setDeletingDoctor(doctor);

@@ -11,7 +11,7 @@ const AvailableAppointments = ({ selectedDate }) => {
     const date = format(selectedDate, 'PP')
     //useQuery replace (useState and useEffect) to load data easest way
     const {data:appointmentOptions=[], refetch, isLoading } = useQuery(['appointmentOptions',date], async() => {
-        const res = await fetch(`http://localhost:5000/appointmentOptions?date=${date}`);
+        const res = await fetch(`https://doctors-portal-server-mauve-two.vercel.app/appointmentOptions?date=${date}`);
         const data = await res.json();
         return data;
     });

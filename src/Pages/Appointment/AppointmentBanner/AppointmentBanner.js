@@ -5,6 +5,7 @@ import { DayPicker } from 'react-day-picker';
 import bg from '../../../assets/images/bg.png';
 
 const AppointmentBanner = ({selectedDate,setSelectedDate}) => {
+
     
     return (
         <header className='my-6' 
@@ -18,7 +19,7 @@ const AppointmentBanner = ({selectedDate,setSelectedDate}) => {
                             mode='single'
                             selected = {selectedDate}
                             onSelect={setSelectedDate}
-                            disabled={selectedDate}
+                            disabled={[selectedDate,{before: new Date()}] }
                         ></DayPicker>
                         
                     </div>

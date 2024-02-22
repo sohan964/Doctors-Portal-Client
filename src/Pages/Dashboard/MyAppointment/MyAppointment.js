@@ -5,16 +5,21 @@ import { Link } from 'react-router-dom';
 
 const MyAppointment = () => {
 
-    const { user } = useContext(AuthContext);
-    const url = `http://localhost:5000/bookings?email=${user?.email}`;
+    const { user, logOut } = useContext(AuthContext);
+    const url = `https://doctors-portal-server-mauve-two.vercel.app/bookings?email=${user?.email}`;
     const { data: bookings = [] } = useQuery({
         queryKey: ['bookings', user?.email],
         queryFn: async () => {
             const res = await fetch(url, {
                 headers: {
-                    authorization: `bearer ${localStorage.getItem('accessToken')}`
+                    authorization: `bearer ${localStorage?.getItem('accessToken')}`
                 }
             });
+            
+            if(res.status ===401 || res.status === 403){
+                logOut();
+                return res.json();
+            }
             const data = await res.json();
             return data;
         }
@@ -39,12 +44,12 @@ const MyAppointment = () => {
                     <tbody >
                         {
                             bookings?.map((booking, i) =>
-                                <tr className="hover" key={booking._id}>
+                                <tr className="hover" key={booking?._id}>
                                     <th>{i + 1}</th>
-                                    <td>{booking.patient}</td>
-                                    <td>{booking.treatment}</td>
-                                    <td>{booking.appointmentDate}</td>
-                                    <td>{booking.slot}</td>
+                                    <td>{booking?.patient}</td>
+                                    <td>{booking?.treatment}</td>
+                                    <td>{booking?.appointmentDate}</td>
+                                    <td>{booking?.slot}</td>
                                     <td>
                                         {
                                             booking.price && !booking.paid && <Link
