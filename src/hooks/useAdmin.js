@@ -1,16 +1,21 @@
-// import { useContext, useEffect, useState } from "react"
-// import { AuthContext } from "../contexts/AuthProvider";
+import { useEffect, useState } from "react"
 
 const useAdmin = email =>{
-    // const [isAdmin, setIsAdmin] = useState(false);
-    // const [isAdminLoading, setIsAdminLoading] = useState(true);
-    // // const {user}= useContext(AuthContext);
-    // // if(user.role === 'admin'){
-    // //     setIsAdmin(true);
-    // //     setIsAdminLoading(false);
-    // // }
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [isAdminLoading, setIsAdminLoading] = useState(true);
+    useEffect(()=>{
+        if(email){
+            fetch(`http://localhost:5001/users/admin/${email}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                setIsAdmin(data.isAdmin);
+                setIsAdminLoading(false);
+            })
+        }
+    },[email])
 
-    // return [isAdmin, isAdminLoading];
+    return [isAdmin, isAdminLoading];
 }
 
 export default useAdmin;

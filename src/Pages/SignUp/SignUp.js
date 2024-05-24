@@ -1,43 +1,71 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { AuthContext } from '../../contexts/AuthProvider';
 import toast from 'react-hot-toast';
-
+import useToken from '../../hooks/useToken';
 
 const SignUp = () => {
     const { register, handleSubmit, formState: { errors }, } = useForm();
-    
+    const { createUser, updateUser } = useContext(AuthContext);
     const [signUpError, setSignUpError] = useState('');
-    
-    
+    const [createdUserEmail, setCreatedUserEmail]=useState('');
+    const [token] = useToken(createdUserEmail);
     const navigate = useNavigate();
 
-
-    const handleSignUp = async (fromData) => {
-        console.log(fromData);
-        setSignUpError('');
-
-        const res = await fetch("https://localhost:44333/api/Account/signup",{
-            method: "POST",
-            headers:{
-                "content-type" : "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify(fromData)
-        })
-        
-        const data = await res.json();
-        console.log(data);
-        if(data===true){
-            toast.success('SignUp Success');
-            navigate('/login');
-        }else{
-            setSignUpError("something is wrong");
-        }
+    if(token){
+        navigate('/');
     }
 
-    
+    const handleSignUp = async (data) => {
+        console.log(data);
+        setSignUpError('');
+        createUser(data.email, data.password)
+            .then(result => {
+                const user = result.user;
+                console.log(user);
+                toast('User Created Successfully.')
+                const userInfo = {
+                    displayName: data.name,
+                }
+                updateUser(userInfo)
+                    .then(() => {
+                        saveUser( data.name, data.email);
+                    })
+                    .catch(err => console.log(err));
+            })
+            .catch(error => {
+                console.log(error)
+                setSignUpError(error.message)
+            });
+    }
+
+    const saveUser = (name, email) =>{
+        const user = {name, email};
+        fetch('http://localhost:5001/users',{
+            method: "POST",
+            headers:{
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+        .then(res => res.json())
+        .then(data =>{
+           setCreatedUserEmail(email);
+            //getUserToken(email);
+        })
+    }
+
+    // const getUserToken = email =>{
+    //     fetch(`http://localhost:5001/jwt?email=${email}`)
+    //     .then(res => res.json())
+    //     .then(data =>{
+    //         if(data.accessToken){
+    //             localStorage.setItem('accessToken', data.accessToken);
+    //             //navigate('/');
+    //         }
+    //     })
+    // }
 
     return (
         <div className='h-[800px] flex justify-center items-center'>
@@ -48,25 +76,14 @@ const SignUp = () => {
 
                     <label className="form-control w-full max-w-xs">
                         <div className="label">
-                            <span className="label-text">FirstName</span>
+                            <span className="label-text">Name</span>
                         </div>
                         <input type="text"
-                            {...register("firstName", {
-                                required: "FirstName is required"
+                            {...register("name", {
+                                required: "Name is required"
                             })}
                             className="input input-bordered w-full max-w-xs" />
-                        {errors.firstName && <p className='text-red-600'>{errors.FirstName.message}</p>}
-                    </label>
-                    <label className="form-control w-full max-w-xs">
-                        <div className="label">
-                            <span className="label-text">LastName</span>
-                        </div>
-                        <input type="text"
-                            {...register("lastName", {
-                                required: "LastName is required"
-                            })}
-                            className="input input-bordered w-full max-w-xs" />
-                        {errors.lastName && <p className='text-red-600'>{errors.lastName.message}</p>}
+                        {errors.name && <p className='text-red-600'>{errors.name.message}</p>}
                     </label>
                     <label className="form-control w-full max-w-xs">
                         <div className="label">
@@ -91,19 +108,6 @@ const SignUp = () => {
                             })}
                             className="input input-bordered w-full max-w-xs" />
                         {errors.password && <p className='text-red-600'>{errors.password.message}</p>}
-                    </label>
-                    <label className="form-control w-full max-w-xs">
-                        <div className="label">
-                            <span className="label-text">ConfirmPassword</span>
-                        </div>
-                        <input type="password"
-                            {...register("confirmPassword", {
-                                required: "confirmPassword is required",
-                                minLength: { value: 6, message: "confirmPassword must be 6 characters or longer" },
-                                pattern: { value: /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])/, message: 'confirmPassword must be strong' }
-                            })}
-                            className="input input-bordered w-full max-w-xs" />
-                        {errors.confirmPassword && <p className='text-red-600'>{errors.confirmPassword.message}</p>}
                     </label>
                     <input className='btn btn-accent w-full mt-4' value="Sign Up" type="submit" />
                     {signUpError && <p className='text-red-600'>{signUpError}</p>}

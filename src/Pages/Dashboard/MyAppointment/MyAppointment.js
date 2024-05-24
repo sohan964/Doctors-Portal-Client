@@ -5,37 +5,32 @@ import { Link } from 'react-router-dom';
 
 const MyAppointment = () => {
 
-    const { user,handleLogout  } = useContext(AuthContext);
-    const url = `https://localhost:44333/api/Bookings?email=${user?.email}`;
-    //console.log(user);
-    console.log(url);
+    const { user, logOut } = useContext(AuthContext);
+    const url = `http://localhost:5001/bookings?email=${user?.email}`;
     const { data: bookings = [] } = useQuery({
-        queryKey: ['Bookings', user?.email],
+        queryKey: ['bookings', user?.email],
         queryFn: async () => {
             const res = await fetch(url, {
                 headers: {
-                    authorization: `bearer ${localStorage?.getItem('Token')}`
+                    authorization: `bearer ${localStorage?.getItem('accessToken')}`
                 }
             });
             
             if(res.status ===401 || res.status === 403){
-                handleLogout();
+                logOut();
                 return res.json();
             }
             const data = await res.json();
-            console.log(data);
             return data;
         }
     })
-    
-    console.log(bookings);
 
     return (
         <div>
             <h3 className="text-3xl mb-5">My Appointments</h3>
             <div className="overflow-x-auto">
                 <table className="table">
-                    
+                    {/* head */}
                     <thead>
                         <tr>
                             <th></th>
@@ -55,10 +50,10 @@ const MyAppointment = () => {
                                     <td>{booking?.treatment}</td>
                                     <td>{booking?.appointmentDate}</td>
                                     <td>{booking?.slot}</td>
-                                    <td> 
+                                    <td>
                                         {
                                             booking.price && !booking.paid && <Link
-                                                to={`/dashboard/payment/${booking.id}`}
+                                                to={`/dashboard/payment/${booking._id}`}
                                             ><button
                                                 className='btn btn-primary btn-sm'
                                             >Pay</button>

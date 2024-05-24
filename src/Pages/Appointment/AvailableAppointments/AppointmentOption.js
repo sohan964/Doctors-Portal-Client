@@ -6,7 +6,7 @@ const AppointmentOption = ({ appointmentOption, setTreatment }) => {
         <div className="card  shadow-xl">
             <div className="card-body text-center">
                 <h2 className="card-title font-bold justify-center text-secondary">{name}</h2>
-                <p> {slots.length > 0 ? slots[0].slot : 'Try Another day'}</p>
+                <p> {slots.length > 0 ? slots[0] : 'Try Another day'}</p>
                 <p>{slots.length} spaces available </p>
                 <p><small>Price: ${price}</small></p>
                 <div className="card-actions justify-center">

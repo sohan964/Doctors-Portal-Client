@@ -11,11 +11,7 @@ const AvailableAppointments = ({ selectedDate }) => {
     const date = format(selectedDate, 'PP')
     //useQuery replace (useState and useEffect) to load data easest way
     const {data:appointmentOptions=[], refetch, isLoading } = useQuery(['appointmentOptions',date], async() => {
-        const res = await fetch(`https://localhost:44333/api/AppointmentOptions?date=${date}`,{
-            headers:{
-                authorization: `bearer ${localStorage.getItem('Token')}`
-            }
-        });
+        const res = await fetch(`http://localhost:5001/appointmentOptions?date=${date}`);
         const data = await res.json();
         return data;
     });
@@ -31,7 +27,7 @@ const AvailableAppointments = ({ selectedDate }) => {
                 {
                     appointmentOptions.map(option =>
                         <AppointmentOption
-                            key={option.id}
+                            key={option._id}
                             appointmentOption={option}
                             setTreatment={setTreatment}
                         ></AppointmentOption>)

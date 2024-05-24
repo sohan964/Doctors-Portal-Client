@@ -7,55 +7,45 @@ const BookingModal = ({ treatment, selectedDate, setTreatment, refetch }) => {
     const { name, slots, price } = treatment; //treatment is appointment options
     const date = format(selectedDate, 'PP');
     const { user } = useContext(AuthContext);
-    console.log(price);
 
-    const handleBooking =  event => {
-        
-            event.preventDefault();
-            const form = event.target;
-            const slot = form.slot.value;
-            const name = form.name.value;
-            const email = form.email.value;
-            const phone = form.phone.value;
-            console.log(name);
+    const handleBooking = event => {
+        event.preventDefault();
+        const form = event.target;
+        const slot = form.slot.value;
+        const name = form.name.value;
+        const email = form.email.value;
+        const phone = form.phone.value;
 
-            const booking = {
-                appointmentDate: date,
-                treatment: treatment.name,
-                patient: name,
-                slot,
-                email,
-                phone,
-                price,
-            }
+        const booking = {
+            appointmentDate: date,
+            treatment: treatment.name,
+            patient: name,
+            slot,
+            email,
+            phone,
+            price,
+        }
 
-
-            fetch('https://localhost:44333/api/Bookings',{
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `bearer ${localStorage.getItem('Token')}`
-                },
-                body: JSON.stringify(booking)
+        fetch('http://localhost:5001/bookings', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(booking)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.acknowledged) {
+                    setTreatment(null);
+                    toast.success('Booking confirmed');
+                    refetch();
+                }
+                else{
+                    toast.error(data.message);
+                }
             })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("this",data);
-                    if(data?.success === false){
-                        toast.error(data.message);
-                    }else{
-                        setTreatment(null);
-                        toast.success('Booking confirmed');
-                        refetch();
-                    }
-                    
-                        
-                })
-                .catch(error =>{
-                    toast.error(error.message);
-                })
-            console.log(booking);
-       
+        console.log(booking);
 
 
     }
@@ -74,18 +64,14 @@ const BookingModal = ({ treatment, selectedDate, setTreatment, refetch }) => {
                         <select name="slot" className="select select-bordered w-full">
 
                             {
-                                slots.map(slt => {
-                                    const { slot, id } = slt;
-                                    console.log(id);
-                                    return <option
-                                        value={slot}
-                                        key={id}
-                                    >{slot}</option>
-                                })
+                                slots.map((slot, i) => <option
+                                    value={slot}
+                                    key={i}
+                                >{slot}</option>)
                             }
                         </select>
-                        <input name='name' type="text" value={user?.firstName +" "+ user?.lastName} disabled className="input w-full input-bordered" />
-                        <input name='email' type="email" value={user?.email} readOnly className="input w-full input-bordered" />
+                        <input name='name' type="text" value={user?.displayName} disabled className="input w-full input-bordered" />
+                        <input name='email' type="email" value={user?.email} className="input w-full input-bordered" />
                         <input name='phone' type="text" placeholder="Phone Number" className="input w-full input-bordered" />
                         <br />
                         <input className='btn btn-accent w-full ' type="submit" value="Submit" />

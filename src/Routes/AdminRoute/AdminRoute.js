@@ -1,19 +1,18 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthProvider';
 import { Navigate, useLocation } from 'react-router-dom';
-
+import useAdmin from '../../hooks/useAdmin';
 import Loading from '../../Pages/Shared/Loading/Loading';
 
 const AdminRoute = ({ children }) => {
     const { user, loading } = useContext(AuthContext);
-    
-    const admin = user.role;
-    console.log(admin)
+    const [isAdmin, isAdminLoading] = useAdmin(user?.email);
+    console.log(isAdmin);
     const location = useLocation();
-    if (loading) {
+    if (loading || isAdminLoading) {
         return <Loading></Loading>
     }
-    if (user && admin==='admin') {
+    if (user && isAdmin) {
         return children;
     }
 
