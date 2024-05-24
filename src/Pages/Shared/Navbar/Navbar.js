@@ -3,18 +3,29 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthProvider';
 
 const Navbar = () => {
-    const { user, logOut } = useContext(AuthContext);
+    const { user, handleLogout } = useContext(AuthContext);
     const handleSignOut = () => {
-        logOut()
-            .then(() => { })
-            .catch(error => console.error(error));
+        fetch("https://localhost:44333/api/Account/logout",{
+            headers:{
+                authorization: `bearer ${localStorage.getItem('Token')}`
+            }
+        }).then(res => res.json())
+        .then(data =>{
+            if(data === true){
+                handleLogout();
+                console.log("logouted");
+                
+            }
+        })
+
     }
+    console.log(user);
     const menuItems = <React.Fragment>
         <li><Link to='/'>Home</Link></li>
         <li><Link to='/appointment'>Appointment</Link></li>
         <li><Link to='/about'>About</Link></li>
 
-        {user?.uid ? <>
+        {user?.id ? <>
             <li><Link to='/dashboard'>Dashboard</Link></li>
             <li><button onClick={handleSignOut}>LogOut</button></li>
         </>

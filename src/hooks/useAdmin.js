@@ -1,21 +1,16 @@
-import { useEffect, useState } from "react"
+// import { useContext, useEffect, useState } from "react"
+// import { AuthContext } from "../contexts/AuthProvider";
 
 const useAdmin = email =>{
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [isAdminLoading, setIsAdminLoading] = useState(true);
-    useEffect(()=>{
-        if(email){
-            fetch(`https://doctors-portal-server-mauve-two.vercel.app/users/admin/${email}`)
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                setIsAdmin(data.isAdmin);
-                setIsAdminLoading(false);
-            })
-        }
-    },[email])
+    // const [isAdmin, setIsAdmin] = useState(false);
+    // const [isAdminLoading, setIsAdminLoading] = useState(true);
+    // // const {user}= useContext(AuthContext);
+    // // if(user.role === 'admin'){
+    // //     setIsAdmin(true);
+    // //     setIsAdminLoading(false);
+    // // }
 
-    return [isAdmin, isAdminLoading];
+    // return [isAdmin, isAdminLoading];
 }
 
 export default useAdmin;

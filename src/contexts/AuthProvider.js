@@ -1,52 +1,63 @@
 import React, { createContext, useEffect, useState } from 'react';
-import {createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile} from 'firebase/auth'
-import app from '../firebase/firebase.config';
+
 export const AuthContext = createContext();
-const auth = getAuth(app);
 
-const AuthProvider = ({children}) => {
-    const [user, setUser]=useState(null);
+
+const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
-    const createUser =(email, password)=>{
-        setLoading(true);
-        return createUserWithEmailAndPassword(auth, email, password);
-    }
+    const [token, setToken] = useState(localStorage.getItem('Token'));
 
-    const signIn = (email, password)=>{
-        setLoading(true);
-        return signInWithEmailAndPassword(auth, email, password);
-    }
 
-    useEffect(()=>{
-        const unsubscribe = onAuthStateChanged(auth, currentUser =>{
-            console.log('user observing');
-            setUser(currentUser);
+
+
+    useEffect(() => {
+        if (token) {
+            fetch("https://localhost:44333/api/Account/user", {
+                headers: {
+                    authorization: `bearer ${localStorage.getItem('Token')}`
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    setUser(data);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.log(error)
+                    setLoading(false);
+                });
+        } else {
             setLoading(false);
-        });
-        return ()=> unsubscribe();
-    },[])
+        }
 
-    const updateUser = (userInfo)=>{
-        return updateProfile(auth.currentUser, userInfo);
-    }
+    }, [token])
 
-    const logOut = ()=>{
-        setLoading(true);
-        localStorage.removeItem('accessToken');
-        return signOut(auth);
-    }
+
+    console.log(token);
+    console.log(user);
+
+
+    const handleLogout = () => {
+        // Perform logout actions
+        localStorage.removeItem('Token'); // Remove token from localStorage
+        setToken(null); // Clear token state
+        setUser({}); // Clear user state
+    };
 
     const authInfo = {
-        createUser,
-        signIn,
         user,
-        logOut,
-        updateUser,
         loading,
+        setLoading,
+        setToken,
+        token,
+        setUser,
+        handleLogout
+
     }
 
     return (
-        <AuthContext.Provider value ={authInfo}>
+        <AuthContext.Provider value={authInfo}>
             {children}
         </AuthContext.Provider>
     );

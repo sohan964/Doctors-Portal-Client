@@ -7,18 +7,24 @@ const AllUsers = () => {
     const { data: users = [], refetch } = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
-            const res = await fetch('https://doctors-portal-server-mauve-two.vercel.app/users');
+            const res = await fetch('https://localhost:44333/api/Account/GetAllUsers',{
+                headers:{
+                    authorization : `bearer ${localStorage.getItem('Token')}`
+                }
+            });
             const data = await res.json();
+            console.log(data);
             return data;
         }
     })
-
+   console.log(users);
     //handle admin
-    const handleMakeAdmin = id => {
-        fetch(`https://doctors-portal-server-mauve-two.vercel.app/users/admin/${id}`, {
+    const handleMakeAdmin = email => {
+        
+        fetch(`https://localhost:44333/api/Account/${email}`, {
             method: 'PUT',
             headers:{
-                authorization: `bearer ${localStorage.getItem('accessToken')}`
+                authorization: `bearer ${localStorage.getItem('Token')}`
             }
 
         })
@@ -50,16 +56,15 @@ const AllUsers = () => {
                         {/* row 1 */}
                         {
                             users.map((user, i) => <tr className='hover'
-                                key={user._id}
+                                key={user.id}
                             >
                                 <th>{i + 1}</th>
-                                <td>{user.name}</td>
+                                <td>{user.firstName +" "+ user.lastName}</td>
                                 <td>{user.email}</td>
-                                <td>{user?.role !== 'admin' && <button onClick={() => handleMakeAdmin(user._id)} className='btn text-white btn-xs btn-primary'>Make Admin</button>}</td>
+                                <td>{user?.role !== 'admin' && <button onClick={() => handleMakeAdmin(user.email)} className='btn text-white btn-xs btn-primary'>Make Admin</button>}</td>
                                 <td><button className='btn btn-xs bg-red-600 text-white'>Delete</button></td>
                             </tr>)
                         }
-
                     </tbody>
                 </table>
             </div>

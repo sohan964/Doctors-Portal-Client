@@ -51,20 +51,24 @@ const router = createBrowserRouter([
             },
             {
                 path: '/dashboard/allusers',
-                element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
+                element: <AllUsers></AllUsers>
             },
-            {
-                path: '/dashboard/adddoctor',
-                element: <AdminRoute><AddDoctor></AddDoctor></AdminRoute>
-            },
-            {
-                path: '/dashboard/managedoctors',
-                element: <AdminRoute><ManageDoctors></ManageDoctors></AdminRoute>
-            },
+            // {
+            //     path: '/dashboard/adddoctor',
+            //     element: <AddDoctor></AddDoctor>
+            // },
+            // {
+            //     path: '/dashboard/managedoctors',
+            //     element: <ManageDoctors></ManageDoctors>
+            // },
             {
                 path: '/dashboard/payment/:id',
                 element: <Payment></Payment>,
-                loader: ({params})=> fetch(`https://doctors-portal-server-mauve-two.vercel.app/bookings/${params.id}`)
+                loader: ({params})=> fetch(`https://localhost:44333/api/Bookings/${params.id}`,{
+                    headers:{
+                        authorization: `bearer ${localStorage.getItem('Token')}`
+                    }
+                })
             },
         ]
     }
